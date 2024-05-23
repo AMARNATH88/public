@@ -1,0 +1,22 @@
+Sub ReplaceSpecialCharacters()
+    Dim ws As Worksheet
+    Dim cell As Range
+    Dim charsToReplace As Variant
+    Dim replaceWith As String
+    Dim i As Integer
+    
+    charsToReplace = Array("!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "=", "{", "}", "[", "]", "|", "\", ":", ";", "'", """", "<", ">", ",", ".", "?", "/", "~", "`")
+    replaceWith = ""
+    
+    For Each ws In ThisWorkbook.Worksheets
+        For Each cell In ws.UsedRange
+            If Not IsEmpty(cell) Then
+                For i = LBound(charsToReplace) To UBound(charsToReplace)
+                    cell.Value = Replace(cell.Value, charsToReplace(i), replaceWith)
+                Next i
+            End If
+        Next cell
+    Next ws
+    
+    MsgBox "Special characters replaced successfully!"
+End Sub
