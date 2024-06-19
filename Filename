@@ -1,0 +1,29 @@
+@echo off
+setlocal
+
+set "target_dir=C:\path\to\your\folder"
+
+REM Check if the directory exists
+if not exist "%target_dir%" (
+    echo The directory "%target_dir%" does not exist.
+    exit /b 1
+)
+
+REM Initialize variable to store the latest file
+set "latest_file="
+
+REM Loop through the files sorted by date (newest first)
+for /f "delims=" %%i in ('dir /b /a-d /o-d /t:w "%target_dir%\*"') do (
+    set "latest_file=%%i"
+    goto :found_latest
+)
+
+:found_latest
+if defined latest_file (
+    echo The latest file is: "%target_dir%\%latest_file%"
+) else (
+    echo No files found in the directory "%target_dir%".
+)
+
+endlocal
+exit /b 0
