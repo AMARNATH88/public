@@ -1,0 +1,181 @@
+1.       SBO - Counting Triplets
+
+
+
+from collections import defaultdict
+
+def countTriplets(arr, r):
+    # Initialize dictionaries to keep track of potential pairs and triplets
+    left_map = defaultdict(int)
+    right_map = defaultdict(int)
+   
+    # Fill the right_map with the count of all elements in the array
+    for num in arr:
+        right_map[num] += 1
+   
+    triplet_count = 0
+   
+    # Iterate through each element in the array
+    for num in arr:
+        right_map[num] -= 1  # We're now processing this number, so reduce its count in right_map
+       
+        if num % r == 0:
+            left_val = num // r  # This would be the first element in a triplet
+            right_val = num * r  # This would be the third element in a triplet
+           
+            # Calculate how many valid triplets we can form with num as the middle element
+            triplet_count += left_map[left_val] * right_map[right_val]
+       
+        # Move the current number to the left_map as we progress
+        left_map[num] += 1
+   
+    return triplet_count
+
+# Example usage:
+arr = [1, 5, 5, 25, 125]
+r = 5
+print(countTriplets(arr, r))  # Output: 4
+
+arr = [1, 3, 9, 9, 27, 81]
+r = 3
+print(countTriplets(arr, r))  # Output: 6
+==============================
+
+
+
+sbo no pairs allowed
+
+def minimalOperations(words):
+    # List to store the results for each word
+    results = []
+
+    # Go through each word in the list
+    for word in words:
+        # Start counting fixes needed for this word
+        count = 0
+        i = 0
+        while i < len(word) - 1:
+            # If two adjacent characters are the same
+            if word[i] == word[i + 1]:
+                count += 1  # Increment the fix counter
+                i += 2  # Skip the next character because we just "fixed" this pair
+            else:
+                i += 1  # Move to the next character
+
+        # Store the result for this word
+        results.append(count)
+
+    # Return the list of results
+    return results
+
+# Example usage:
+words = ["ab", "aab", "abb", "abab", "aaaaaaba","abaaaba"]
+print(minimalOperations(words))  # Output: [0, 1, 1, 0, 1]
+
+
+
+approach 2
+
+
+
+def minimalOperations(words):
+    results = []
+    for word in words:
+        count = 0
+        i = 0
+        while i < len(word) - 1:
+            if word[i] == word[i + 1]:
+                count += 1
+                i += 2  # Skip the next character since we've already "fixed" this pair
+            else:
+                i += 1
+        results.append(count)
+    return results
+
+# Example usage:
+words = ["ab", "aab", "abb", "abab", "aaaaaaba"]
+print(minimalOperations(words))  # Output: [0, 1, 1, 0, 1]
+=========================================================
+sbo k smallest substring
+
+def getSubstring(input_str, k):
+    n = len(input_str)
+    best_substring = None
+    start = 0
+    count_ones = 0
+
+    for end in range(n):
+        # Expand the window to include the current character
+        if input_str[end] == '1':
+            count_ones += 1
+       
+        # When we have exactly k '1's in the current window
+        while count_ones == k:
+            current_substring = input_str[start:end + 1]
+           
+            # Compare with the best substring found so far
+            if (best_substring is None or
+                len(current_substring) < len(best_substring) or
+                (len(current_substring) == len(best_substring) and current_substring < best_substring)):
+                best_substring = current_substring
+           
+            # Shrink the window from the left
+            if input_str[start] == '1':
+                count_ones -= 1
+            start += 1
+
+    return best_substring
+
+# Example usage:
+input_str = "0101101"
+k = 3
+print(getSubstring(input_str, k))  # Output: "1011"
+
+input_str = "110011101"
+k = 4
+print(getSubstring(input_str, k))  # Output: "11101"
+
+input_str = "10101"
+k = 2
+print(getSubstring(input_str, k))  # Output: "101"
+
+input_str = "1110111"
+k = 3
+print(getSubstring(input_str, k))  # Output: "111"
+
+============================================================================================================================
+
+
+SB Minimize array cost
+
+def getMinimumCost(arr):
+    n = len(arr)
+   
+    # Initial cost of the array
+    initial_cost = sum((arr[i] - arr[i-1]) ** 2 for i in range(1, n))
+   
+    # Variable to track the minimum cost found
+    min_cost = float('inf')
+   
+    # Iterate over each possible place to insert a new element
+    for i in range(1, n):
+        # Possible new value that minimizes the cost between arr[i-1] and arr[i]
+        new_value = (arr[i-1] + arr[i]) // 2
+       
+        # Calculate the cost if we insert new_value between arr[i-1] and arr[i]
+        new_cost = (
+            initial_cost
+            - (arr[i] - arr[i-1]) ** 2
+            + (new_value - arr[i-1]) ** 2
+            + (arr[i] - new_value) ** 2
+        )
+       
+        # Update min_cost if the new_cost is lower
+        if new_cost < min_cost:
+            min_cost = new_cost
+   
+    return min_cost
+
+# Example usage:
+arr = [1, 3, 5, 2, 10]
+print(getMinimumCost(arr))  # Output: 49
