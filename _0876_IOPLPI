@@ -1,0 +1,456 @@
+tv series | period 
+
+import requests
+import re
+
+def showsInProduction(startYear, endYear):
+    base_url = "https://jsonmock.hackerrank.com/api/tvseries"
+    current_page = 1
+    shows = []
+
+    while True:
+        # Fetch data from the API
+        response = requests.get(f"{base_url}?page={current_page}")
+        data = response.json()
+
+        for show in data['data']:
+            runtime = show['runtime_of_series']
+           
+            # Extract years using regex to handle different formats
+            match = re.search(r'(\d{4})(?:-(\d{4})?)?', runtime)
+            if match:
+                start = int(match.group(1))
+                end = int(match.group(2)) if match.group(2) else -1
+
+                # Apply filtering conditions
+                if startYear <= start and (endYear == -1 or end <= endYear or end == -1):
+                    shows.append(show['name'])
+
+        # Check if we have more pages to process
+        if current_page >= data['total_pages']:
+            break
+
+        # Move to the next page
+        current_page += 1
+
+    # Return the sorted list of shows
+    return sorted(shows)
+
+# Example usage:
+startYear = 2006
+endYear = 2011
+result = showsInProduction(startYear, endYear)
+for show in result:
+    print(show)
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#1. Pulse Rate
+
+import requests
+import math
+
+def get_records(page_num):
+    url = f"https://jsonmock.hackerrank.com/api/medical_records?page={page_num}"    
+    response = requests.get(url)
+    return response.json()
+
+def pulseRate(diagnosisName, doctorId):
+    # Fetch the first page to determine the total number of pages
+    initial_data = get_records(1)
+    total_pages = initial_data['total_pages']
+
+    matching_pulse_rates = []
+
+    # Loop through all pages to gather matching records
+    for page in range(1, total_pages + 1):
+        data = get_records(page)
+        for record in data['data']:
+            if (record['doctor']['id'] == doctorId and
+                record['diagnosis']['name'] == diagnosisName):
+                print(record)
+                matching_pulse_rates.append(record['vitals']['pulse'])
+
+    # Calculate the average pulse rate and truncate to an integer
+    if matching_pulse_rates:
+        average_pulse_rate = sum(matching_pulse_rates) / len(matching_pulse_rates)        
+        return math.trunc(average_pulse_rate)
+    else:
+        return 0
+
+# Example usage
+diagnosis_name = "Pulmonary embolism"
+doctor_id = 2
+print("")
+print("Average Pulse Rate",pulseRate(diagnosis_name, doctor_id))
+
+Output
+
+{'id': 1, 'timestamp': 1565637002408, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 154, 'bloodPressureSystole': 91, 'pulse': 125, 'breathingRate': 32, 'bodyTemperature': 100}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 2, 'userName': 'Bob Martin', 'userDob': '14-09-1989', 'meta': {'height': 174, 'weight': 172}}
+{'id': 6, 'timestamp': 1568550058964, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 155, 'bloodPressureSystole': 90, 'pulse': 130, 'breathingRate': 29, 'bodyTemperature': 99.2}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 1, 'userName': 'John Oliver', 'userDob': '02-01-1986', 'meta': {'height': 168, 'weight': 173}}
+{'id': 9, 'timestamp': 1548036340751, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 147, 'bloodPressureSystole': 96, 'pulse': 130, 'breathingRate': 28, 'bodyTemperature': 101}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 3, 'userName': 'Helena Fernandez', 'userDob': '23-12-1987', 'meta': {'height': 157, 'weight': 106}}
+{'id': 18, 'timestamp': 1560177927736, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 141, 'bloodPressureSystole': 96, 'pulse': 123, 'breathingRate': 29, 'bodyTemperature': 99}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 3, 'userName': 'Helena Fernandez', 'userDob': '23-12-1987', 'meta': {'height': 157, 'weight': 103}}
+{'id': 20, 'timestamp': 1549184918171, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 145, 'bloodPressureSystole': 94, 'pulse': 125, 'breathingRate': 25, 'bodyTemperature': 102.6}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 2, 'userName': 'Bob Martin', 'userDob': '14-09-1989', 'meta': {'height': 174, 'weight': 181}}
+{'id': 24, 'timestamp': 1563805161434, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 144, 'bloodPressureSystole': 92, 'pulse': 137, 'breathingRate': 34, 'bodyTemperature': 102.5}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 1, 'userName': 'John Oliver', 'userDob': '02-01-1986', 'meta': {'height': 168, 'weight': 191}}
+{'id': 25, 'timestamp': 1551539005307, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 154, 'bloodPressureSystole': 90, 'pulse': 131, 'breathingRate': 22, 'bodyTemperature': 103}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 3, 'userName': 'Helena Fernandez', 'userDob': '23-12-1987', 'meta': {'height': 157, 'weight': 107}}
+{'id': 28, 'timestamp': 1550268297157, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 154, 'bloodPressureSystole': 99, 'pulse': 125, 'breathingRate': 33, 'bodyTemperature': 100.1}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 4, 'userName': 'Francesco De Mello', 'userDob': '02-05-1994', 'meta': {'height': 183, 'weight': 195}}
+{'id': 36, 'timestamp': 1548913424982, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 155, 'bloodPressureSystole': 96, 'pulse': 130, 'breathingRate': 24, 'bodyTemperature': 99.3}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 4, 'userName': 'Francesco De Mello', 'userDob': '02-05-1994', 'meta': {'height': 183, 'weight': 212}}
+{'id': 56, 'timestamp': 1556411602393, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 150, 'bloodPressureSystole': 90, 'pulse': 122, 'breathingRate': 27, 'bodyTemperature': 102.8}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 3, 'userName': 'Helena Fernandez', 'userDob': '23-12-1987', 'meta': {'height': 157, 'weight': 109}}
+{'id': 92, 'timestamp': 1564291090683, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 151, 'bloodPressureSystole': 93, 'pulse': 136, 'breathingRate': 27, 'bodyTemperature': 101.7}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 1, 'userName': 'John Oliver', 'userDob': '02-01-1986', 'meta': {'height': 168, 'weight': 183}}
+{'id': 96, 'timestamp': 1550084268468, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 143, 'bloodPressureSystole': 95, 'pulse': 123, 'breathingRate': 34, 'bodyTemperature': 101}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 2, 'userName': 'Bob Martin', 'userDob': '14-09-1989', 'meta': {'height': 174, 'weight': 177}}
+{'id': 98, 'timestamp': 1568922902985, 'diagnosis': {'id': 3, 'name': 'Pulmonary embolism', 'severity': 4}, 'vitals': {'bloodPressureDiastole': 140, 'bloodPressureSystole': 93, 'pulse': 140, 'breathingRate': 31, 'bodyTemperature': 102}, 'doctor': {'id': 2, 'name': 'Dr Arnold Bullock'}, 'userId': 1, 'userName': 'John Oliver', 'userDob': '02-01-1986', 'meta': {'height': 168, 'weight': 189}}
+Average Pulse Rate 129
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#2. Maximum Transfer
+import requests
+
+import locale
+
+def maximumTransfer(name, city):
+    
+    # Initialize variables to store the maximum credit and debit amounts
+    max_credit = 0.0
+    max_debit = 0.0
+    # Initialize the page number to 1 and the base API URL
+    page = 1
+    base_url = 'https://jsonmock.hackerrank.com/api/transactions'
+    while True:
+        # Make the API request with the current page number
+        response = requests.get(f'{base_url}?page={page}')
+        data = response.json()
+        
+        # Iterate through the transaction records in the data
+        for record in data['data']:
+            # Filter records based on the given name and city
+            if record['userName'] == name and record['location']['city'] == city:
+                amount = float(record['amount'].replace('$', '').replace(',', ''))
+                print(amount)
+                # Update the maximum credit and debit amounts if applicable
+                if record['txnType'] == 'credit':
+                    max_credit = max(max_credit, amount)
+                elif record['txnType'] == 'debit':
+                    max_debit = max(max_debit, amount)
+
+        # Check if there are more pages to retrieve
+        if page < data['total_pages']:
+            page += 1
+        else:
+            # If there are no more pages, break out of the loop
+            break
+
+      # Set the locale to en_US to format numbers as dollars
+
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    # Format the results as strings in dollar format
+    credit_amount_str = locale.currency(max_credit, grouping=True)
+    debit_amount_str = locale.currency(max_debit, grouping=True)
+    # Return the results as a list of strings
+    return [credit_amount_str, debit_amount_str]
+
+maximumTransfer("John Oliver","Ripley")
+
+Output
+
+1670.57
+3102.22
+2277.37
+967.38
+1499.55
+3467.44
+2950.13
+3066.39
+422.88
+3321.83
+426.65
+3765.71
+3618.75
+['$3,618.75', '$3,765.71']
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#3 REST API : Body Temperature
+
+import requests
+
+def getAverageTemperatureForUser(user_id):
+    base_url = "https://jsonmock.hackerrank.com/api/medical_records"
+    page = 1
+    print("Page : ",page)
+    total_temps = 0
+    total_records = 0
+    while True:
+        response = requests.get(f"{base_url}?userid={user_id}&page={page}").json()
+        data = response["data"]
+        if not data:
+            break
+        for record in data:
+            body_temperature = record["vitals"]["bodyTemperature"]            
+            print("          Body Temperature",body_temperature)
+            total_temps += body_temperature
+            total_records += 1
+            
+        if page >= response["total_pages"]:
+            break
+
+        page += 1
+        print("Page : ",page)
+    if total_records == 0:
+        return "0"
+    
+    print("")
+    print("Total Records -> ",total_records)
+    print("Sum of Temperature of all Patients -> ",total_temps)
+    average_temp = round(total_temps / total_records, 1)
+    return str(average_temp)
+
+getAverageTemperatureForUser("1")
+
+Output
+Page :  1
+          Body Temperature 100
+          Body Temperature 99.4
+          Body Temperature 100.8
+          Body Temperature 97
+          Body Temperature 102.5
+          Body Temperature 99.2
+          Body Temperature 100
+          Body Temperature 101.5
+          Body Temperature 101
+          Body Temperature 103.8
+Page :  2
+          Body Temperature 101.9
+          Body Temperature 99.2
+          Body Temperature 101.3
+          Body Temperature 97.3
+          Body Temperature 99.3
+          Body Temperature 99.9
+          Body Temperature 103.4
+          Body Temperature 99
+          Body Temperature 100.4
+          Body Temperature 102.6
+Page :  3
+          Body Temperature 102.3
+          Body Temperature 97.1
+          Body Temperature 101.8
+          Body Temperature 102.5
+          Body Temperature 103
+          Body Temperature 99.2
+          Body Temperature 99.2
+          Body Temperature 100.1
+          Body Temperature 102.3
+          Body Temperature 98.6
+Page :  4
+          Body Temperature 102.9
+          Body Temperature 97.8
+          Body Temperature 99.7
+          Body Temperature 102.9
+          Body Temperature 100.7
+          Body Temperature 99.3
+          Body Temperature 100.9
+          Body Temperature 99.9
+          Body Temperature 99.8
+          Body Temperature 98.3
+Page :  5
+          Body Temperature 103
+          Body Temperature 97.7
+          Body Temperature 101
+          Body Temperature 99.4
+          Body Temperature 100.6
+          Body Temperature 97.3
+          Body Temperature 99.7
+          Body Temperature 101.4
+          Body Temperature 102.6
+          Body Temperature 100.8
+Page :  6
+          Body Temperature 99.2
+          Body Temperature 100.1
+          Body Temperature 103.8
+          Body Temperature 102
+          Body Temperature 99.8
+          Body Temperature 102.8
+          Body Temperature 102.4
+          Body Temperature 103.9
+          Body Temperature 103.7
+          Body Temperature 99.1
+Page :  7
+          Body Temperature 97.9
+          Body Temperature 102.4
+          Body Temperature 101.2
+          Body Temperature 99.5
+          Body Temperature 104
+          Body Temperature 104
+          Body Temperature 97.3
+          Body Temperature 99.4
+          Body Temperature 102.9
+          Body Temperature 100.1
+Page :  8
+          Body Temperature 99.8
+          Body Temperature 98.8
+          Body Temperature 100.9
+          Body Temperature 97
+          Body Temperature 99.1
+          Body Temperature 102
+          Body Temperature 100
+          Body Temperature 100
+          Body Temperature 100.8
+          Body Temperature 99.3
+Page :  9
+          Body Temperature 99.2
+          Body Temperature 99.5
+          Body Temperature 103.5
+          Body Temperature 103
+          Body Temperature 102.2
+          Body Temperature 100.2
+          Body Temperature 98.9
+          Body Temperature 102.7
+          Body Temperature 97.8
+          Body Temperature 103.8
+Page :  10
+          Body Temperature 100.3
+          Body Temperature 101.7
+          Body Temperature 98.6
+          Body Temperature 97.1
+          Body Temperature 99.6
+          Body Temperature 101
+          Body Temperature 99.5
+          Body Temperature 102
+          Body Temperature 103.3
+
+Total Records ->  99
+Sum of Temperature of all Patients ->  9958.400000000001
+'100.6'
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+REST API :- Highest international students
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+import requests
+
+def highestInternationalStudents(firstCity, secondCity):
+    base_url = "https://jsonmock.hackerrank.com/api/universities"
+    page = 1
+    highest_university = ""
+    max_international_students = -1
+    
+    while True:
+        # Fetch data from the API
+        response = requests.get(f"{base_url}?page={page}")
+        data = response.json()
+
+        # Check if the response contains the expected 'data' field
+        if 'data' not in data or len(data['data']) == 0:
+            break  # Exit if no data is found
+
+        # Process the universities in the current page
+        for university in data['data']:
+            if 'location' in university and university['location']['city'] in [firstCity, secondCity]:
+                num_international_students = int(university['international_students'].replace(',', ''))
+
+                if num_international_students > max_international_students:
+                    max_international_students = num_international_students
+                    highest_university = university['university']
+
+        # Check if more pages exist
+        if 'total_pages' in data and page >= data['total_pages']:
+            break
+        page += 1
+    
+    return highest_university
+
+# Example usage:
+firstCity = "Stanford"
+secondCity = "Zürich"
+print(highestInternationalStudents(firstCity, secondCity))  # Output should be the university with the highest number of international students
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Rest API Asteroid monitoring station 
+
+import requests
+
+year = int(input("Enter the year: "))
+orbitClass = input("Enter the orbit class: ").lower()
+# print(orbitClass)
+response = requests.get('https://jsonmock.hackerrank.com/api/asteroids/search?=' + orbitClass + '&page=1').json()
+
+
+total_pages = response['total_pages']
+per_page = response['per_page']
+
+ans = []
+
+for i in range(1, total_pages + 1):
+    temp_response = requests.get('https://jsonmock.hackerrank.com/api/asteroids/search?orbit_class=' + orbitClass + '&page='+ str(i)).json()
+
+    temp_ans = []
+    for j in range(per_page):
+        try:
+            temp_ans.append(temp_response['data'][j])
+
+        except:
+            pass
+
+    data = sorted(temp_ans, key=lambda x: (float(x.get('period_yr', '1')), x['designation']))
+    n = len(data)
+    for k in range(n):
+        if int(data[k]['discovery_date'][0:4]) == year:
+            ans.append(data[k]['designation'])
+
+m = len(ans)
+for i in range(m):
+    print(ans[i])
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+City Weather station
+import requests
+
+def weatherStation(keyword: str):
+    base_url = "https://jsonmock.hackerrank.com/api/weather/search?name="
+    results = []
+    page = 1
+    
+    while True:
+        # Fetch data from the API for the current page
+        response = requests.get(f"{base_url}{keyword}&page={page}")
+        data = response.json()
+        
+        # Check if there is data to process
+        if 'data' not in data or len(data['data']) == 0:
+            break
+        
+        # Process each city record in the current page
+        for record in data['data']:
+            city_name = record['name']
+            temperature = record['weather'].split()[0]  # Get the temperature number
+            wind_speed = record['status'][0].split(": ")[1].replace('Kmph', '')  # Extract wind speed
+            humidity = record['status'][1].split(": ")[1].replace('%', '')  # Extract humidity
+            
+            # Create the required format: "city_name,temperature,wind_speed,humidity"
+            formatted_record = f"{city_name},{temperature},{wind_speed},{humidity}"
+            results.append(formatted_record)
+        
+        # Check if we need to fetch the next page
+        if page >= data['total_pages']:
+            break
+        page += 1
+    
+    # Sort results by city name
+    results.sort()
+    
+    return results
+
+# Example usage:
+keyword = "Am"
+print(weatherStation(keyword))
