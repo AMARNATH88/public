@@ -1,0 +1,171 @@
+billing software report 2
+
+
+SELECT
+    c.iban,
+    GROUP_CONCAT(
+        CASE
+            WHEN ROW_NUMBER() OVER (PARTITION BY c.iban ORDER BY t.dt ASC) = 1 AND t.amount >= 0 THEN CAST(t.amount AS CHAR)
+            WHEN t.amount >= 0 THEN CONCAT('+', t.amount)
+            ELSE CAST(t.amount AS CHAR)
+        END
+        ORDER BY t.dt ASC
+        SEPARATOR ' '
+    ) AS transactions,
+    SUM(t.amount) AS total
+FROM
+    customers c
+JOIN
+    transactions t
+ON
+    c.id = t.customer_id
+GROUP BY
+    c.iban
+ORDER BY
+    total DESC;
+
+
+
+AI video processing service cost calculationSQL
+
+
+SELECT
+    t.hash AS hash,
+    COUNT(p.id) AS processes,
+    SUM(CASE
+        WHEN p.is_parallel = 1 THEN 1
+        ELSE 0
+    END) AS total_parallel_processes,
+    SUM(p.usage_time) AS total_usage_time,
+    ROUND(SUM(CASE
+        WHEN p.is_parallel = 1 THEN p.usage_time * 0.01 * 2
+        ELSE p.usage_time * 0.01
+    END), 2) AS total_cost
+FROM
+    tasks t
+JOIN
+    processes p ON t.id = p.task_id
+GROUP BY
+    t.hash
+ORDER BY
+    t.hash ASC;
+
+
+
+
+online streaming service stream quality report
+
+SELECT
+    s.mac_address,
+    COUNT(*) AS total_streams,
+
+    -- Calculate and format traffic for 720p
+    IFNULL(
+        CASE
+            WHEN SUM(CASE WHEN s.quality = '720p' THEN s.traffic ELSE 0 END) >= 1024
+            THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '720p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+            ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '720p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+        END,
+    '0.00 MiB') AS "720p",
+
+    -- Calculate and format traffic for 1080p
+    IFNULL(
+        CASE
+            WHEN SUM(CASE WHEN s.quality = '1080p' THEN s.traffic ELSE 0 END) >= 1024
+            THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1080p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+            ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1080p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+        END,
+    '0.00 MiB') AS "1080p",
+
+    -- Calculate and format traffic for 1440p
+    IFNULL(
+        CASE
+            WHEN SUM(CASE WHEN s.quality = '1440p' THEN s.traffic ELSE 0 END) >= 1024
+            THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1440p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+            ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1440p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+        END,
+    '0.00 MiB') AS "1440p",
+
+    -- Calculate and format traffic for 2160p
+    IFNULL(
+        CASE
+            WHEN SUM(CASE WHEN s.quality = '2160p' THEN s.traffic ELSE 0 END) >= 1024
+            THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '2160p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+            ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '2160p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+        END,
+    '0.00 MiB') AS "2160p"
+   
+FROM
+    streams s
+GROUP BY
+    s.mac_address
+ORDER BY
+    s.mac_address ASC;
+
+
+
+
+SELECT
+    s.mac_address,
+    COUNT(*) AS total_streams,
+   
+    -- 720p traffic calculation and formatting
+    CASE
+        WHEN SUM(CASE WHEN s.quality = '720p' THEN s.traffic ELSE 0 END) >= 1024
+        THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '720p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+        ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '720p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+    END AS "720p",
+   
+    -- 1080p traffic calculation and formatting
+    CASE
+        WHEN SUM(CASE WHEN s.quality = '1080p' THEN s.traffic ELSE 0 END) >= 1024
+        THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1080p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+        ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1080p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+    END AS "1080p",
+   
+    -- 1440p traffic calculation and formatting
+    CASE
+        WHEN SUM(CASE WHEN s.quality = '1440p' THEN s.traffic ELSE 0 END) >= 1024
+        THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1440p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+        ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '1440p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+    END AS "1440p",
+   
+    -- 2160p traffic calculation and formatting
+    CASE
+        WHEN SUM(CASE WHEN s.quality = '2160p' THEN s.traffic ELSE 0 END) >= 1024
+        THEN CONCAT(FORMAT(SUM(CASE WHEN s.quality = '2160p' THEN s.traffic ELSE 0 END) / 1024, 'N2'), ' GiB')
+        ELSE CONCAT(FORMAT(SUM(CASE WHEN s.quality = '2160p' THEN s.traffic ELSE 0 END), 'N2'), ' MiB')
+    END AS "2160p"
+   
+FROM
+    streams s
+GROUP BY
+    s.mac_address
+ORDER BY
+    s.mac_address ASC;
+
+
+
+
+
+
+credit and debit software
+
+
+SELECT
+    t.iban,
+    -- Handle negative amounts by converting them to positive and enclosing them in parentheses
+    CASE
+        WHEN SUM(CASE WHEN t.amount < 0 THEN -t.amount ELSE 0 END) > 0
+        THEN CONCAT('(', FORMAT(SUM(CASE WHEN t.amount < 0 THEN -t.amount ELSE 0 END), 'N2'), ')')
+        ELSE '0.00'
+    END AS debit,
+   
+    -- Positive transactions are handled normally
+    FORMAT(SUM(CASE WHEN t.amount >= 0 THEN t.amount ELSE 0 END), 'N2') AS credit
+FROM
+    transactions t
+GROUP BY
+    t.iban
+ORDER BY
+    t.iban ASC;
