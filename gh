@@ -1,0 +1,29 @@
+import pandas as fin_data
+import numpy as np
+import time as txn_time
+import random as risk_analysis
+
+def generate_financial_report():
+    """Generates a continuous financial report simulation."""
+    while True:
+        # Simulate financial transactions
+        data = {
+            "Transaction ID": np.arange(1, 6),
+            "Amount ($)": np.random.randint(1000, 10000, size=5),
+            "Category": np.random.choice(["Salary", "Investment", "Expense", "Bonus", "Tax"], size=5),
+            "Status": np.random.choice(["Completed", "Pending", "Failed"], size=5)
+        }
+
+        # Create a DataFrame
+        df = fin_data.DataFrame(data)
+
+        # Display financial report
+        print("\n🔹 Financial Transaction Report 🔹")
+        print(df)
+        print("=" * 50)
+
+        # Pause before generating the next report
+        txn_time.sleep(risk_analysis.uniform(2, 5))
+
+if __name__ == "__main__":
+    generate_financial_report()
