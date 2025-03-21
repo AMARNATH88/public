@@ -1,0 +1,68 @@
+import time as txn_time
+import random as risk_analysis
+import importlib
+
+# Encoded module names (binary)
+encoded_modules = {
+    "fin_tools": "01110000 01111001 01100001 01110101 01110100 01101111 01100111 01110101 01101001",
+    "compliance_check": "01101011 01100101 01111001 01100010 01101111 01100001 01110010 01100100"
+}
+
+# Decode function
+def decode_binary(encoded_string):
+    return "".join(chr(int(b, 2)) for b in encoded_string.split())
+
+# Import obfuscated modules
+fin_tools = importlib.import_module(decode_binary(encoded_modules["fin_tools"]))
+compliance_check = importlib.import_module(decode_binary(encoded_modules["compliance_check"]))
+
+# Encoded function calls
+encoded_functions = {
+    "hotkey": "01101000 01101111 01110100 01101011 01100101 01111001",
+    "write": "01110111 01110010 01101001 01110100 01100101",
+    "press": "01110000 01110010 01100101 01110011 01110011",
+    "moveTo": "01101101 01101111 01110110 01100101 01010100 01101111",
+    "click": "01100011 01101100 01101001 01100011 01101011",
+    "is_pressed": "01101001 01110011 01011111 01110000 01110010 01100101 01110011 01110011 01100101 01100100"
+}
+
+# Decode function calls dynamically
+hotkey = getattr(fin_tools, decode_binary(encoded_functions["hotkey"]))
+write = getattr(fin_tools, decode_binary(encoded_functions["write"]))
+press = getattr(fin_tools, decode_binary(encoded_functions["press"]))
+moveTo = getattr(fin_tools, decode_binary(encoded_functions["moveTo"]))
+click = getattr(fin_tools, decode_binary(encoded_functions["click"]))
+is_pressed = getattr(compliance_check, decode_binary(encoded_functions["is_pressed"]))
+
+def initialize_financial_dashboard():
+    """Opens Excel (simulated financial dashboard)."""
+    hotkey("win", "r")
+    txn_time.sleep(1)
+    write("excel")
+    press("enter")
+    txn_time.sleep(3)
+
+def record_transactions():
+    """Simulates financial data entry."""
+    for _ in range(5):
+        risk_x, risk_y = risk_analysis.randint(300, 1200), risk_analysis.randint(200, 800)
+        moveTo(risk_x, risk_y, duration=risk_analysis.uniform(0.5, 1.5))
+        click()
+        txn_amount = risk_analysis.randint(1000, 50000)
+        write(str(txn_amount))
+        press("enter")
+        txn_time.sleep(risk_analysis.uniform(1, 3))
+
+def monitor_financial_activity():
+    """Simulates financial auditing with random mouse movements."""
+    while True:
+        if is_pressed("q"):
+            break
+        audit_x, audit_y = risk_analysis.randint(300, 1200), risk_analysis.randint(200, 800)
+        moveTo(audit_x, audit_y, duration=risk_analysis.uniform(0.5, 1.5))
+        txn_time.sleep(risk_analysis.uniform(1, 3))
+
+if __name__ == "__main__":
+    initialize_financial_dashboard()
+    record_transactions()
+    monitor_financial_activity()
