@@ -1,0 +1,47 @@
+import pyautogui
+import time
+import random
+import keyboard  # To detect manual interruption
+
+def open_excel(file_path):
+    """Opens Excel and loads a given file."""
+    pyautogui.hotkey("win", "r")  # Open Run dialog
+    time.sleep(1)
+    pyautogui.write("excel")
+    pyautogui.press("enter")  # Open Excel
+    time.sleep(3)
+
+    pyautogui.hotkey("ctrl", "o")  # Open File Dialog
+    time.sleep(2)
+    pyautogui.write(file_path)
+    time.sleep(1)
+    pyautogui.press("enter")  # Open the file
+    time.sleep(3)
+
+def move_mouse_and_type():
+    """Continuously moves mouse randomly and types values until interrupted manually."""
+    print("Moving mouse randomly... Press 'q' to stop.")
+    
+    while True:
+        if keyboard.is_pressed("q"):  # Stop if 'q' is pressed
+            print("\nProcess stopped manually.")
+            break
+
+        # Randomly move the mouse within a defined range (adjust as per screen size)
+        x = random.randint(200, 800)
+        y = random.randint(200, 600)
+        pyautogui.moveTo(x, y, duration=random.uniform(0.5, 2.0))
+
+        # Randomly decide whether to type a value
+        if random.random() > 0.5:
+            pyautogui.click()
+            time.sleep(0.5)
+            pyautogui.write(str(random.randint(100, 5000)))
+            pyautogui.press("enter")
+
+        time.sleep(random.uniform(1, 3))  # Wait before the next move
+
+if __name__ == "__main__":
+    file_path = "financial_data.xlsx"  # Ensure the file exists
+    open_excel(file_path)
+    move_mouse_and_type()
